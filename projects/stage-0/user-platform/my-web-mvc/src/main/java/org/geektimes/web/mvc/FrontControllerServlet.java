@@ -1,6 +1,7 @@
 package org.geektimes.web.mvc;
 
 import org.apache.commons.lang.StringUtils;
+import org.geektimes.web.mvc.context.ComponentContext;
 import org.geektimes.web.mvc.controller.Controller;
 import org.geektimes.web.mvc.controller.PageController;
 import org.geektimes.web.mvc.controller.RestController;
@@ -25,6 +26,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 import static java.util.Arrays.asList;
+import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang.StringUtils.substringAfter;
 
 public class FrontControllerServlet extends HttpServlet {
@@ -39,12 +41,15 @@ public class FrontControllerServlet extends HttpServlet {
      */
     private Map<String, HandlerMethodInfo> handleMethodInfoMapping = new HashMap<>();
 
+    private ComponentContext componentContext = null;
+
     /**
      * 初始化 Servlet
      *
      * @param servletConfig
      */
     public void init(ServletConfig servletConfig) {
+        componentContext = (ComponentContext) servletConfig.getServletContext().getAttribute(ComponentContext.CONTEXT_NAME);
         initHandleMethods();
     }
 
@@ -69,6 +74,11 @@ public class FrontControllerServlet extends HttpServlet {
                         new HandlerMethodInfo(requestPath, method, supportedHttpMethods));
             }
             controllersMapping.put(requestPath, controller);
+            for (String str : componentContext.getComponentNames()){
+                if(componentContext.getComponent(str).getClass().equals(controllerClass)){
+                    controllersMapping.put(requestPath, componentContext.getComponent(str));
+                }
+            }
         }
     }
 

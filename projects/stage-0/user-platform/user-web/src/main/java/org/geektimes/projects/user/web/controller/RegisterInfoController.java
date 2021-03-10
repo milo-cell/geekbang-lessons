@@ -6,6 +6,8 @@ import org.geektimes.projects.user.service.UserService;
 import org.geektimes.projects.user.service.impl.UserServiceImpl;
 import org.geektimes.web.mvc.controller.PageController;
 
+import javax.annotation.Resource;
+import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.POST;
@@ -14,7 +16,9 @@ import javax.ws.rs.Path;
 
 @Path("/register-info")
 public class RegisterInfoController implements PageController {
-    private UserService userService = new UserServiceImpl();
+
+    @Resource(name = "bean/UserService")
+    private UserService userService;
 
     @POST
     @Override
